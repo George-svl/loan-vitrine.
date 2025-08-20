@@ -2,30 +2,79 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ТОП-3 Онлайн Займа 2025</title>
-    <link rel="stylesheet" href="./assets/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ТОП-3 Онлайн Займа 2025</title>
+  <link rel="stylesheet" href="./assets/style.css">
 </head>
 <body>
 
 <header>
-    <h1>ТОП-3 Онлайн Займа 2025</h1>
-    <p>Деньги за 5 минут на карту — выбери лучший займ прямо сейчас</p>
-    <img src="./assets/banner.png" alt="Баннер" width="100%">
+  <h1>ТОП-3 Онлайн Займа 2025</h1>
+  <p>Деньги за 5 минут на карту — выбери лучший займ прямо сейчас</p>
+  <img id="autoBanner" src="./assets/banner.png" alt="Баннер" style="width:100%">
 </header>
 
 <div class="container">
-    <div class="offer">
-        <h2>МФО Быстрые Деньги</h2>
-        <p>Сумма: до 30 000 ₽</p>
-        <a href="#" class="btn">Получить займ</a>
-    </div>
+  <div class="offer">
+    <h2>МФО Быстрые Деньги</h2>
+    <p>Сумма: до 30 000 ₽</p>
+    <a href="#" class="btn">Получить займ</a>
+  </div>
 </div>
 
 <footer>
-    <p>Сайт носит информационный характер и не является кредитной организацией.</p>
+  <p>Сайт носит информационный характер и не является кредитной организацией.</p>
 </footer>
+
+<script>
+(async function(){
+  // Поставь сюда свои значения (убери точку в имени репо, если она есть)
+  const owner = 'george-svl';      // <- твой логин (маленькими буквами безопаснее)
+  const repo  = 'loan-vitrine';    // <- имя репозитория (без точки в конце)
+  const branch = 'main';           // <- main или master
+  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/assets?ref=${branch}`;
+
+  const imgElem = document.getElementById('autoBanner');
+  const fallback = './assets/banner.png';
+
+  try {
+    const res = await fetch(apiUrl);
+    if (!res.ok) throw new Error('GitHub API error: ' + res.status);
+    const files = await res.json();
+
+    // Сначала ищем файл, в имени которого есть "banner" (регистронезависимо)
+    let imageFile = files.find(f => {
+      if (!f || !f.name) return false;
+      const name = f.name.toLowerCase();
+      return name.includes('banner') && (name.endsWith('.png') || name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('.webp') || name.endsWith('.gif'));
+    });
+
+    // Если не найден — выбираем просто первую картинку
+    if (!imageFile) {
+      imageFile = files.find(f => {
+        if (!f || !f.name) return false;
+        const name = f.name.toLowerCase();
+        return name.endsWith('.png') || name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('.webp') || name.endsWith('.gif');
+      });
+    }
+
+    if (imageFile) {
+      const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/assets/${encodeURIComponent(imageFile.name)}`;
+      imgElem.src = rawUrl;
+    } else {
+      imgElem.src = fallback;
+    }
+  } catch (err) {
+    console.warn('Не удалось получить список файлов assets:', err);
+    imgElem.src = fallback;
+  }
+
+  imgElem.onerror = () => {
+    if (imgElem.src !== fallback) imgElem.src = fallback;
+  };
+})();
+</script>
 
 </body>
 </html>
